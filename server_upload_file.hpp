@@ -19,7 +19,7 @@ namespace SimpleWeb {
 	public:
 		std::string boundary;
 		std::string content_data;
-		long content_data_len;
+		size_t content_data_len;
 
 		std::string processing_field_name;
 		std::string filename;
@@ -56,7 +56,7 @@ namespace SimpleWeb {
 
 			auto content_type = content_type_iter->second;
 
-			long boundary_pos = content_type.find("boundary=");
+			size_t boundary_pos = content_type.find("boundary=");
 
 			if (boundary_pos == std::string::npos) {
 				error_message = std::string("Cannot find boundary in Content-type: \"") + content_type + std::string("\"");
@@ -66,7 +66,7 @@ namespace SimpleWeb {
 			boundary = content_type.substr(boundary_pos + 9, content_type.length() - boundary_pos);
 
 			//parse Headers
-			long content_data_begin_pos = content.find("\r\n\r\n");
+			size_t content_data_begin_pos = content.find("\r\n\r\n");
 			std::string content_header = content.substr(0, content_data_begin_pos);
 
 			if (content_data_begin_pos == string::npos)
@@ -77,7 +77,7 @@ namespace SimpleWeb {
 
 			content_data_begin_pos += 4;//skip "\r\n\r\n"
 
-			long content_data_end_pos = content.find(boundary, content_data_begin_pos);
+			size_t content_data_end_pos = content.find(boundary, content_data_begin_pos);
 			if (content_data_end_pos == string::npos)
 			{
 				content_data_end_pos = content.length() - boundary.length() - 6;//exclude "\r\n--boundary--"
@@ -98,7 +98,7 @@ namespace SimpleWeb {
 			}
 
 			// Find name
-			long name_pos = content_header.find("name=\"");
+			size_t name_pos = content_header.find("name=\"");
 			if (name_pos == std::string::npos)
 			{
 				error_message = std::string("Accepted headers of field does not contain \"name=\".\nThe headers are: \"") + content_header + std::string("\"");
@@ -106,7 +106,7 @@ namespace SimpleWeb {
 			}
 
 			name_pos += 6;//SKIP "name=\""
-			long name_end_pos = content_header.find("\"", name_pos);
+			size_t name_end_pos = content_header.find("\"", name_pos);
 			if (name_end_pos == std::string::npos)
 			{
 				error_message = std::string("Cannot find closing quote of \"name=\" attribute.\nThe headers are: \"") + content_header + std::string("\"");
@@ -119,7 +119,7 @@ namespace SimpleWeb {
 
 
 			// find filename if exists
-			long filename_pos = content_header.find("filename=\"");
+			size_t filename_pos = content_header.find("filename=\"");
 			if (filename_pos == std::string::npos)
 			{
 				error_message = std::string("Accepted headers of field does not contain \"filename=\".\nThe headers are: \"") + content_header + std::string("\"");
@@ -127,7 +127,7 @@ namespace SimpleWeb {
 			}
 
 			filename_pos += 10;//SKIP "filename=\""
-			long filename_end_pos = content_header.find("\"", filename_pos);
+			size_t filename_end_pos = content_header.find("\"", filename_pos);
 			if (filename_end_pos == std::string::npos)
 			{
 				error_message = std::string("Cannot find closing quote of \"filename=\" attribute.\nThe headers are: \"") + content_header + std::string("\"");
@@ -139,7 +139,7 @@ namespace SimpleWeb {
 			}
 
 			// find Content-Type if exists
-			long content_type_pos = content_header.find("Content-Type: ");
+			size_t content_type_pos = content_header.find("Content-Type: ");
 			if (content_type_pos == std::string::npos)
 			{
 				error_message = std::string("Cannot find closing quote of \"filename=\" attribute.\nThe headers are: \"") + content_header + std::string("\"");
@@ -147,7 +147,7 @@ namespace SimpleWeb {
 			}
 
 			content_type_pos += 14;//SKIP "Content-Type: "
-			long content_type_end_pos = content_header.find("\r\n", content_type_pos);
+			size_t content_type_end_pos = content_header.find("\r\n", content_type_pos);
 			if (content_type_end_pos != std::string::npos)
 			{
 				content_type = content_header.substr(content_type_pos, content_type_end_pos - content_type_pos);
